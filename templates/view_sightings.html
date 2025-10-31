@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}All Sightings - Roach Tracker{% endblock %}
+
+{% block content %}
+<div class="sightings-page">
+    <header class="page-header">
+        <h1>All Sightings</h1>
+        <p class="subtitle">Complete sighting history</p>
+    </header>
+
+    <!-- Search and Actions -->
+    <div class="toolbar">
+        <form action="{{ url_for('view_sightings') }}" method="GET" class="search-form">
+            <input type="text" name="q" class="search-input" placeholder="Search by location or notes..."
+                   value="{{ query }}">
+            <button type="submit" class="btn-primary">Search</button>
+            {% if query %}
+                <a href="{{ url_for('view_sightings') }}" class="btn-secondary">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Sightings List -->
+    {% if sightings %}
+        <div class="sightings-count">
+            <p>Showing {{ sightings|length }} sighting{% if sightings|length != 1 %}s{% endif %}</p>
+        </div>
+
+        <div class="sightings-grid">
+            {% for sighting in sightings %}
+                <div class="sighting-card-full">
+                    <div class="sighting-header">
+                        <h3>
+                            <a href="{{ url_for('view_sighting', sighting_id=sighting.id) }}">
+                                {{ sighting.location }}
+                            </a>
+                        </h3>
+                        <span class="badge badge-{{ 'danger' if sighting.roach_count > 3 else 'warning' if sighting.roach_count > 1 else 'info' }}">
+                            {{ sighting.roach_count }} roach{% if sighting.roach_count != 1 %}es{% endif %}
+                        </span>
+                    </div>
+
+                    {% if sighting.photo_path %}
+                        <div class="sighting-photo">
+                            <img src="{{ url_for('static', filename=sighting.photo_path.replace('static/', '')) }}"
+                                 alt="Sighting photo" loading="lazy">
+                        </div>
+                    {% endif %}
+
+                    <div class="sighting-details">
+                        <div class="detail-row">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                            <span>{{ format_timestamp(sighting.timestamp) }}</span>
+                        </div>
+                        {% if sighting.room_type %}
+                            <div class="detail-row">
+                                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                </svg>
+                                <span>{{ sighting.room_type }}</span>
+                            </div>
+                        {% endif %}
+                        {% if sighting.roach_size %}
+                            <div class="detail-row">
+                                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2v20M2 12h20"/>
+                                </svg>
+                                <span>{{ sighting.roach_size }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if sighting.notes %}
+                        <p class="sighting-notes">
+                            {{ sighting.notes[:150] }}{% if sighting.notes|length > 150 %}...{% endif %}
+                        </p>
+                    {% endif %}
+
+                    <div class="sighting-actions">
+                        <a href="{{ url_for('view_sighting', sighting_id=sighting.id) }}" class="btn-link">
+                            View Details →
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            {% if query %}
+                <p>No sightings found matching "{{ query }}"</p>
+                <a href="{{ url_for('view_sightings') }}" class="btn-secondary">View All Sightings</a>
+            {% else %}
+                <p>No sightings logged yet.</p>
+                <a href="{{ url_for('log_sighting') }}" class="btn-primary">Log Your First Sighting</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
