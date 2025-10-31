@@ -3,17 +3,21 @@ File: __init__.py
 Path: app/__init__.py
 Purpose: Flask application initialization and configuration
 Author: dnoice + Claude AI
-Version: 1.0.0
+Version: 1.1.0
 Created: 2025-10-31
 Updated: 2025-10-31
 """
 
 from flask import Flask
+from flask_login import LoginManager
 import os
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+
+# Initialize Flask-Login
+login_manager = LoginManager()
 
 
 def create_app():
@@ -51,6 +55,26 @@ def create_app():
         os.makedirs(db_dir, exist_ok=True)
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     os.makedirs('exports', exist_ok=True)
+
+    # Configure Flask-Login
+    login_manager.init_app(app)
+    login_manager.login_view = 'login'
+    login_manager.login_message = 'Please log in to access this page.'
+    login_manager.login_message_category = 'info'
+
+    # User loader callback for Flask-Login
+    @login_manager.user_loader
+    def load_user(user_id):
+        """Load user by ID for Flask-Login."""
+        from app.models import Database, User
+        db = Database(app.config['DATABASE'])
+        try:
+            user_data = db.get_user_by_id(int(user_id))
+            if user_data and user_data.get('is_active'):
+                return User(user_data)
+        except (ValueError, TypeError):
+            pass
+        return None
 
     # Import and register routes
     from app.main import register_routes

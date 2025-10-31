@@ -12,17 +12,20 @@ Roach Tracker is a full-stack, local-first, privacy-focused web application for 
 
 ### Key Features
 
+- **User Authentication** - Secure multi-user support with role-based access control
 - **Mobile-Optimized Interface** - Touch-friendly controls with responsive design
 - **Photo Documentation** - Upload and store photos with automatic resizing
 - **Comprehensive Tracking** - Log location, count, size, time, weather, and notes
 - **Analytics Dashboard** - Visualize patterns and trends in sighting data
 - **Professional Reports** - Generate PDF and CSV exports for management
+- **Multi-Tenant Support** - Property management for landlords and property managers
 - **100% Local & Private** - No cloud services, complete data control
 - **Zero Configuration** - Simple setup with automated scripts
 
 ### Technology Stack
 
 - **Backend**: Flask (Python 3.12)
+- **Authentication**: Flask-Login with secure password hashing
 - **Database**: SQLite
 - **Frontend**: HTML5, CSS3, JavaScript
 - **Photo Processing**: Pillow (PIL)
@@ -43,11 +46,14 @@ cd Roach-Tracker
 # 2. Run setup (creates venv, installs dependencies, initializes database)
 ./setup.sh
 
-# 3. Start the application
+# 3. Create admin user
+python create_admin.py
+
+# 4. Start the application
 ./run.sh
 ```
 
-Then open your browser to `http://localhost:5000`
+Then open your browser to `http://localhost:5000/login` and log in with your admin credentials
 
 ### Verification
 
@@ -87,6 +93,7 @@ To verify your installation:
 ## Documentation
 
 - [QUICK_START.md](QUICK_START.md) - Detailed setup and usage guide
+- [AUTHENTICATION.md](AUTHENTICATION.md) - User authentication and management guide
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Technical design and structure
 - [SAMPLE_COMPLAINT_LETTER.txt](SAMPLE_COMPLAINT_LETTER.txt) - Template for formal complaints
 
@@ -176,6 +183,49 @@ For issues, questions, or contributions:
 
 ## Version History
 
+### v1.1.0 (2025-10-31) - Authentication & Multi-User Support
+
+**Major New Features**:
+- ✓ Complete authentication system with Flask-Login
+- ✓ User registration and login/logout functionality
+- ✓ Role-based access control (admin, resident, property_manager)
+- ✓ Multi-tenant support with properties and user relationships
+- ✓ Admin dashboard for user management
+- ✓ Secure password hashing (PBKDF2-SHA256)
+- ✓ Session management with "remember me" option
+- ✓ User activation/deactivation controls
+
+**Database Enhancements**:
+- Added users table with comprehensive fields
+- Added properties table for multi-tenant support
+- Added user_properties relationship table
+- Extended sightings table with user_id and property_id
+- Automatic migration for existing databases
+
+**New Files**:
+- `app/auth.py` - Authentication decorators and utilities
+- `create_admin.py` - Interactive admin user creation script
+- `templates/login.html` - User login page
+- `templates/register.html` - User registration page
+- `templates/admin_users.html` - Admin user management interface
+- `templates/admin_create_user.html` - Admin user creation form
+- `AUTHENTICATION.md` - Complete authentication documentation
+
+**Code Updates**:
+- Updated all routes with @login_required decorators
+- Enhanced navigation with user info display
+- Added CSS styling for authentication UI
+- Updated base template with conditional navigation
+- Modified models.py with comprehensive user management methods
+
+**Documentation**:
+- Created comprehensive AUTHENTICATION.md guide
+- Updated README with authentication information
+- Updated quick start guide with admin creation step
+- Added authentication to feature list
+
+For detailed information, see: [AUTHENTICATION.md](AUTHENTICATION.md)
+
 ### v1.0.1 (2025-10-31) - Security & Stability Update
 
 **Major Accomplishments**:
@@ -230,12 +280,16 @@ For detailed information, see: `docs/branches/claude/roach-tracker-kickoff-011CU
 
 ## Roadmap / Future Development
 
-### Planned Features
+### Completed Features
 
-**Authentication & Multi-User Support**
+**✓ Authentication & Multi-User Support** (v1.1.0)
 - User accounts and authentication system
 - Role-based access control (admin, resident, property manager)
 - Multi-tenant support for property managers
+- Admin dashboard for user management
+- Secure password hashing and session management
+
+### Planned Features
 
 **Enhanced Reporting**
 - Additional export formats (JSON, Excel/XLSX)
@@ -293,7 +347,7 @@ For detailed information, see: `docs/branches/claude/roach-tracker-kickoff-011CU
 
 Created by **dnoice** with **Claude AI**
 
-Version: 1.0.1
+Version: 1.1.0
 Created: 2025-10-31
 Updated: 2025-10-31
 
