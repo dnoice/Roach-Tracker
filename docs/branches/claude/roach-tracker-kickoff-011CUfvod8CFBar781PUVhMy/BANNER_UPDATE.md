@@ -46,6 +46,69 @@ Quick post-merge update to add visual branding to the project README. This updat
 
 ---
 
+## Visual Design Analysis
+
+### Overall Layout
+
+**Orientation**: Landscape (aspect ratio approximately 2:1)
+**Composition**: Centralized typographic focus with visual balance achieved through evenly distributed background graphics
+**Design Hierarchy**: The project title "Roach Tracker" is the dominant focal point, positioned centrally with high contrast against the warm orange background. The tagline beneath it provides immediate contextual grounding.
+
+### Typography
+
+**Primary Text**: "Roach Tracker"
+- Bold, sans-serif typeface (likely a geometric or humanist family such as Helvetica Neue or Open Sans Bold)
+- White color ensures maximum legibility against the orange field
+
+**Secondary Text**: "Local-First Cockroach Sighting Documentation System"
+- Smaller, regular-weight sans-serif font
+- Maintains visual harmony through spacing and alignment
+
+**Alignment**: Both lines are center-aligned, creating a strong symmetrical axis through the composition's midpoint
+
+### Color and Contrast
+
+**Dominant Hue**: Warm orange (#E67E22 range)
+- Suggestive of caution and environmental context
+- Evokes sanitation or alert tones without aggression
+
+**Contrast Strategy**: High-contrast white typography for emphasis, complemented by low-opacity background line art for visual texture
+
+### Background Graphics
+
+**Style**: Flat, outline-based vector icons with uniform line weight and semi-transparent rendering (~15–20% opacity)
+
+**Motifs**:
+- **Magnifying glass inspecting a cockroach** (top left) — symbolizes investigation or documentation
+- **Clipboard with checkmarks** (top center) — represents systematic data logging
+- **Sheets with checkboxes and cockroach icons** (top right) — reinforces reporting and verification themes
+- **Spray bottle and pest control tools** (bottom corners) — subtly reference action and remediation
+- **Central roach silhouette** (behind the text) — anchors the concept visually without overwhelming the typography
+
+**Patterning**: Icons are distributed in a grid-like arrangement, forming a seamless visual texture without clutter
+
+### Lighting and Texture
+
+- Uses flat design principles with no gradients or shadows beyond the natural contrast of layered transparency
+- Subtle variation in orange tones gives the banner warmth and depth while preserving visual simplicity
+
+### Design Purpose
+
+The composition communicates a blend of **professionalism**, **civic empowerment**, and **usability**.
+
+**Color Psychology**: The orange hue evokes urgency and community action
+**Visual Language**: Clean vector graphics and typography project reliability and technological precision
+**Mission Alignment**: Perfectly aligns with the project's mission as a privacy-focused tool for documenting cockroach infestations and asserting habitability rights
+
+**Design Principles Applied**:
+- Flat design for modern aesthetic
+- High contrast for accessibility
+- Centered composition for balance
+- Icon-based visual language for universal comprehension
+- Monochromatic palette for brand consistency
+
+---
+
 ## Commit Details
 
 **Commit Hash**: a0b9629
