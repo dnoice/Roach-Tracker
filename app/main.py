@@ -43,35 +43,77 @@ def register_routes(app):
     def log_sighting():
         """Log a new roach sighting."""
         if request.method == 'POST':
-            # Process form data
-            data = {
-                'timestamp': request.form.get('timestamp') or datetime.now().isoformat(),
-                'location': request.form.get('location'),
-                'room_type': request.form.get('room_type'),
-                'roach_count': int(request.form.get('roach_count', 1)),
-                'roach_size': request.form.get('roach_size'),
-                'roach_type': request.form.get('roach_type'),
-                'notes': request.form.get('notes'),
-                'weather': request.form.get('weather'),
-                'temperature': float(request.form.get('temperature')) if request.form.get('temperature') else None,
-                'time_of_day': get_time_of_day(request.form.get('timestamp')),
-            }
-
-            # Handle photo upload
-            photo_path = None
-            if 'photo' in request.files:
-                file = request.files['photo']
-                if file and file.filename and allowed_file(file.filename, app.config['ALLOWED_EXTENSIONS']):
-                    photo_path = process_and_save_photo(file, app.config['UPLOAD_FOLDER'])
-                    data['photo_path'] = photo_path
-
-            # Save to database
             try:
+                # Validate required fields
+                location = request.form.get('location', '').strip()
+                if not location:
+                    flash('Location is required', 'error')
+                    return render_template('log_sighting.html')
+
+                # Parse roach_count with error handling
+                try:
+                    roach_count = int(request.form.get('roach_count', 1))
+                    if roach_count < 1:
+                        raise ValueError("Count must be positive")
+                except (ValueError, TypeError):
+                    flash('Invalid roach count. Must be a positive number.', 'error')
+                    return render_template('log_sighting.html')
+
+                # Parse temperature with error handling
+                temperature = None
+                temp_str = request.form.get('temperature', '').strip()
+                if temp_str:
+                    try:
+                        temperature = float(temp_str)
+                    except (ValueError, TypeError):
+                        flash('Invalid temperature value', 'error')
+                        return render_template('log_sighting.html')
+
+                # Process form data
+                data = {
+                    'timestamp': request.form.get('timestamp') or datetime.now().isoformat(),
+                    'location': location,
+                    'room_type': request.form.get('room_type'),
+                    'roach_count': roach_count,
+                    'roach_size': request.form.get('roach_size'),
+                    'roach_type': request.form.get('roach_type'),
+                    'notes': request.form.get('notes'),
+                    'weather': request.form.get('weather'),
+                    'temperature': temperature,
+                    'time_of_day': get_time_of_day(request.form.get('timestamp')),
+                }
+
+                # Handle photo upload
+                photo_path = None
+                if 'photo' in request.files:
+                    file = request.files['photo']
+                    if file and file.filename:
+                        if not allowed_file(file.filename, app.config['ALLOWED_EXTENSIONS']):
+                            flash('Invalid file type. Allowed: PNG, JPG, JPEG, GIF, WEBP', 'error')
+                            return render_template('log_sighting.html')
+
+                        try:
+                            photo_path = process_and_save_photo(file, app.config['UPLOAD_FOLDER'])
+                            if photo_path:  # Only set if successfully processed
+                                data['photo_path'] = photo_path
+                        except ValueError as e:
+                            flash(f'Photo upload failed: {str(e)}', 'error')
+                            return render_template('log_sighting.html')
+                        except IOError:
+                            flash('Photo upload failed: Server error', 'error')
+                            return render_template('log_sighting.html')
+
+                # Save to database
                 sighting_id = db.create_sighting(data)
                 flash('Sighting logged successfully!', 'success')
                 return redirect(url_for('view_sighting', sighting_id=sighting_id))
+
+            except ValueError as e:
+                flash(f'Validation error: {str(e)}', 'error')
+                return render_template('log_sighting.html')
             except Exception as e:
-                flash(f'Error logging sighting: {str(e)}', 'error')
+                flash('An error occurred while logging the sighting. Please try again.', 'error')
+                current_app.logger.error(f"Error logging sighting: {str(e)}")
                 return render_template('log_sighting.html')
 
         return render_template('log_sighting.html')
@@ -79,11 +121,21 @@ def register_routes(app):
     @app.route('/sightings')
     def view_sightings():
         """View all sightings with search capability."""
-        query = request.args.get('q', '')
-        if query:
-            sightings = db.search_sightings(query)
-        else:
-            sightings = db.get_all_sightings()
+        query = request.args.get('q', '').strip()
+        sightings = []
+
+        try:
+            if query:
+                sightings = db.search_sightings(query)
+            else:
+                sightings = db.get_all_sightings()
+        except ValueError as e:
+            flash(f'Search error: {str(e)}', 'error')
+            sightings = []
+        except Exception as e:
+            flash('An error occurred while retrieving sightings', 'error')
+            current_app.logger.error(f"Error retrieving sightings: {str(e)}")
+            sightings = []
 
         return render_template('view_sightings.html',
                              sightings=sightings,
@@ -93,7 +145,12 @@ def register_routes(app):
     @app.route('/sighting/<int:sighting_id>')
     def view_sighting(sighting_id):
         """View detailed information about a specific sighting."""
-        sighting = db.get_sighting(sighting_id)
+        try:
+            sighting = db.get_sighting(sighting_id)
+        except ValueError:
+            flash('Invalid sighting ID', 'error')
+            return redirect(url_for('view_sightings'))
+
         if not sighting:
             flash('Sighting not found.', 'error')
             return redirect(url_for('view_sightings'))
@@ -105,47 +162,96 @@ def register_routes(app):
     @app.route('/sighting/<int:sighting_id>/edit', methods=['GET', 'POST'])
     def edit_sighting(sighting_id):
         """Edit an existing sighting."""
-        sighting = db.get_sighting(sighting_id)
+        try:
+            sighting = db.get_sighting(sighting_id)
+        except ValueError:
+            flash('Invalid sighting ID', 'error')
+            return redirect(url_for('view_sightings'))
+
         if not sighting:
             flash('Sighting not found.', 'error')
             return redirect(url_for('view_sightings'))
 
         if request.method == 'POST':
-            # Process form data
-            data = {
-                'timestamp': request.form.get('timestamp') or sighting['timestamp'],
-                'location': request.form.get('location'),
-                'room_type': request.form.get('room_type'),
-                'roach_count': int(request.form.get('roach_count', 1)),
-                'roach_size': request.form.get('roach_size'),
-                'roach_type': request.form.get('roach_type'),
-                'notes': request.form.get('notes'),
-                'weather': request.form.get('weather'),
-                'temperature': float(request.form.get('temperature')) if request.form.get('temperature') else None,
-                'time_of_day': get_time_of_day(request.form.get('timestamp')),
-                'photo_path': sighting['photo_path'],  # Keep existing photo
-            }
-
-            # Handle new photo upload
-            if 'photo' in request.files:
-                file = request.files['photo']
-                if file and file.filename and allowed_file(file.filename, app.config['ALLOWED_EXTENSIONS']):
-                    # Delete old photo if exists
-                    if sighting['photo_path'] and os.path.exists(sighting['photo_path']):
-                        try:
-                            os.remove(sighting['photo_path'])
-                        except:
-                            pass
-                    photo_path = process_and_save_photo(file, app.config['UPLOAD_FOLDER'])
-                    data['photo_path'] = photo_path
-
-            # Update database
             try:
+                # Validate required fields
+                location = request.form.get('location', '').strip()
+                if not location:
+                    flash('Location is required', 'error')
+                    return render_template('edit_sighting.html', sighting=sighting)
+
+                # Parse roach_count with error handling
+                try:
+                    roach_count = int(request.form.get('roach_count', 1))
+                    if roach_count < 1:
+                        raise ValueError("Count must be positive")
+                except (ValueError, TypeError):
+                    flash('Invalid roach count. Must be a positive number.', 'error')
+                    return render_template('edit_sighting.html', sighting=sighting)
+
+                # Parse temperature with error handling
+                temperature = None
+                temp_str = request.form.get('temperature', '').strip()
+                if temp_str:
+                    try:
+                        temperature = float(temp_str)
+                    except (ValueError, TypeError):
+                        flash('Invalid temperature value', 'error')
+                        return render_template('edit_sighting.html', sighting=sighting)
+
+                # Process form data
+                data = {
+                    'timestamp': request.form.get('timestamp') or sighting['timestamp'],
+                    'location': location,
+                    'room_type': request.form.get('room_type'),
+                    'roach_count': roach_count,
+                    'roach_size': request.form.get('roach_size'),
+                    'roach_type': request.form.get('roach_type'),
+                    'notes': request.form.get('notes'),
+                    'weather': request.form.get('weather'),
+                    'temperature': temperature,
+                    'time_of_day': get_time_of_day(request.form.get('timestamp')),
+                    'photo_path': sighting['photo_path'],  # Keep existing photo
+                }
+
+                # Handle new photo upload
+                if 'photo' in request.files:
+                    file = request.files['photo']
+                    if file and file.filename:
+                        if not allowed_file(file.filename, app.config['ALLOWED_EXTENSIONS']):
+                            flash('Invalid file type. Allowed: PNG, JPG, JPEG, GIF, WEBP', 'error')
+                            return render_template('edit_sighting.html', sighting=sighting)
+
+                        try:
+                            photo_path = process_and_save_photo(file, app.config['UPLOAD_FOLDER'])
+                            if photo_path:  # Only update if successfully processed
+                                # Delete old photo if exists and is different
+                                if sighting['photo_path'] and sighting['photo_path'] != photo_path:
+                                    if os.path.exists(sighting['photo_path']) and os.path.isfile(sighting['photo_path']):
+                                        try:
+                                            os.remove(sighting['photo_path'])
+                                        except (OSError, IOError) as e:
+                                            current_app.logger.warning(f"Failed to delete old photo: {str(e)}")
+                                data['photo_path'] = photo_path
+                        except ValueError as e:
+                            flash(f'Photo upload failed: {str(e)}', 'error')
+                            return render_template('edit_sighting.html', sighting=sighting)
+                        except IOError:
+                            flash('Photo upload failed: Server error', 'error')
+                            return render_template('edit_sighting.html', sighting=sighting)
+
+                # Update database
                 db.update_sighting(sighting_id, data)
                 flash('Sighting updated successfully!', 'success')
                 return redirect(url_for('view_sighting', sighting_id=sighting_id))
+
+            except ValueError as e:
+                flash(f'Validation error: {str(e)}', 'error')
+                return render_template('edit_sighting.html', sighting=sighting)
             except Exception as e:
-                flash(f'Error updating sighting: {str(e)}', 'error')
+                flash('An error occurred while updating the sighting. Please try again.', 'error')
+                current_app.logger.error(f"Error updating sighting: {str(e)}")
+                return render_template('edit_sighting.html', sighting=sighting)
 
         return render_template('edit_sighting.html',
                              sighting=sighting)
@@ -153,32 +259,57 @@ def register_routes(app):
     @app.route('/sighting/<int:sighting_id>/delete', methods=['POST'])
     def delete_sighting(sighting_id):
         """Delete a sighting."""
-        sighting = db.get_sighting(sighting_id)
+        try:
+            sighting = db.get_sighting(sighting_id)
+        except ValueError:
+            flash('Invalid sighting ID', 'error')
+            return redirect(url_for('view_sightings'))
+
         if not sighting:
             flash('Sighting not found.', 'error')
             return redirect(url_for('view_sightings'))
 
         # Delete photo if exists
-        if sighting['photo_path'] and os.path.exists(sighting['photo_path']):
-            try:
-                os.remove(sighting['photo_path'])
-            except:
-                pass
+        if sighting['photo_path']:
+            photo_path = sighting['photo_path']
+            if os.path.exists(photo_path) and os.path.isfile(photo_path):
+                try:
+                    os.remove(photo_path)
+                except (OSError, IOError) as e:
+                    # Log but don't fail the deletion
+                    current_app.logger.warning(f"Failed to delete photo file: {str(e)}")
 
         # Delete from database
         try:
             db.delete_sighting(sighting_id)
             flash('Sighting deleted successfully!', 'success')
+        except ValueError as e:
+            flash(f'Validation error: {str(e)}', 'error')
         except Exception as e:
-            flash(f'Error deleting sighting: {str(e)}', 'error')
+            flash('An error occurred while deleting the sighting', 'error')
+            current_app.logger.error(f"Error deleting sighting: {str(e)}")
 
         return redirect(url_for('view_sightings'))
 
     @app.route('/statistics')
     def statistics():
         """View comprehensive statistics and analytics."""
-        stats = db.get_statistics()
-        all_sightings = db.get_all_sightings()
+        try:
+            stats = db.get_statistics()
+            all_sightings = db.get_all_sightings()
+        except Exception as e:
+            flash('Error loading statistics. Please try again.', 'error')
+            current_app.logger.error(f"Error loading statistics: {str(e)}")
+            stats = {
+                'total_sightings': 0,
+                'total_roaches': 0,
+                'locations': [],
+                'sizes': [],
+                'times_of_day': [],
+                'recent_trend': []
+            }
+            all_sightings = []
+
         return render_template('statistics.html',
                              stats=stats,
                              all_sightings=all_sightings,
@@ -187,7 +318,13 @@ def register_routes(app):
     @app.route('/export/pdf')
     def export_pdf():
         """Generate and download PDF report."""
-        sightings = db.get_all_sightings()
+        try:
+            sightings = db.get_all_sightings()
+        except Exception as e:
+            flash('Error retrieving sightings for export', 'error')
+            current_app.logger.error(f"Error retrieving sightings for PDF: {str(e)}")
+            return redirect(url_for('index'))
+
         if not sightings:
             flash('No sightings to export.', 'warning')
             return redirect(url_for('index'))
@@ -203,13 +340,20 @@ def register_routes(app):
                            download_name=filename,
                            mimetype='application/pdf')
         except Exception as e:
-            flash(f'Error generating PDF: {str(e)}', 'error')
+            flash('Error generating PDF report. Please try again.', 'error')
+            current_app.logger.error(f"Error generating PDF: {str(e)}")
             return redirect(url_for('statistics'))
 
     @app.route('/export/csv')
     def export_csv():
         """Generate and download CSV export."""
-        sightings = db.get_all_sightings()
+        try:
+            sightings = db.get_all_sightings()
+        except Exception as e:
+            flash('Error retrieving sightings for export', 'error')
+            current_app.logger.error(f"Error retrieving sightings for CSV: {str(e)}")
+            return redirect(url_for('index'))
+
         if not sightings:
             flash('No sightings to export.', 'warning')
             return redirect(url_for('index'))
@@ -225,7 +369,8 @@ def register_routes(app):
                            download_name=filename,
                            mimetype='text/csv')
         except Exception as e:
-            flash(f'Error generating CSV: {str(e)}', 'error')
+            flash('Error generating CSV export. Please try again.', 'error')
+            current_app.logger.error(f"Error generating CSV: {str(e)}")
             return redirect(url_for('statistics'))
 
     @app.errorhandler(404)

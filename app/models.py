@@ -10,7 +10,7 @@ Updated: 2025-10-31
 
 import sqlite3
 from datetime import datetime
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional
 from contextlib import contextmanager
 
 
@@ -84,7 +84,21 @@ class Database:
 
         Returns:
             int: ID of newly created sighting
+
+        Raises:
+            ValueError: If required fields are missing or invalid
         """
+        # Validate required fields
+        if not data or not isinstance(data, dict):
+            raise ValueError("Data must be a non-empty dictionary")
+        if 'location' not in data or not data['location']:
+            raise ValueError("Location is required")
+
+        # Validate roach_count if provided
+        roach_count = data.get('roach_count', 1)
+        if not isinstance(roach_count, int) or roach_count < 1:
+            raise ValueError("Roach count must be a positive integer")
+
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute('''
@@ -95,9 +109,9 @@ class Database:
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 data.get('timestamp', datetime.now().isoformat()),
-                data['location'],
+                data['location'].strip(),
                 data.get('room_type'),
-                data.get('roach_count', 1),
+                roach_count,
                 data.get('roach_size'),
                 data.get('roach_type'),
                 data.get('photo_path'),
@@ -117,7 +131,13 @@ class Database:
 
         Returns:
             Dict or None: Sighting data as dictionary
+
+        Raises:
+            ValueError: If sighting_id is invalid
         """
+        if not isinstance(sighting_id, int) or sighting_id < 1:
+            raise ValueError("Sighting ID must be a positive integer")
+
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute('SELECT * FROM sightings WHERE id = ?', (sighting_id,))
@@ -135,13 +155,24 @@ class Database:
 
         Returns:
             List[Dict]: List of sighting records
+
+        Raises:
+            ValueError: If limit or offset are invalid
         """
+        # Validate pagination parameters
+        if limit is not None and (not isinstance(limit, int) or limit < 1):
+            raise ValueError("Limit must be a positive integer")
+        if not isinstance(offset, int) or offset < 0:
+            raise ValueError("Offset must be a non-negative integer")
+
         with self.get_connection() as conn:
             cursor = conn.cursor()
             query = 'SELECT * FROM sightings ORDER BY timestamp DESC'
+            params = []
             if limit:
-                query += f' LIMIT {limit} OFFSET {offset}'
-            cursor.execute(query)
+                query += ' LIMIT ? OFFSET ?'
+                params = [limit, offset]
+            cursor.execute(query, params)
             return [dict(row) for row in cursor.fetchall()]
 
     def update_sighting(self, sighting_id: int, data: Dict) -> bool:
@@ -154,7 +185,23 @@ class Database:
 
         Returns:
             bool: True if update successful
+
+        Raises:
+            ValueError: If sighting_id or data are invalid
         """
+        # Validate inputs
+        if not isinstance(sighting_id, int) or sighting_id < 1:
+            raise ValueError("Sighting ID must be a positive integer")
+        if not data or not isinstance(data, dict):
+            raise ValueError("Data must be a non-empty dictionary")
+        if 'location' not in data or not data['location']:
+            raise ValueError("Location is required")
+
+        # Validate roach_count if provided
+        roach_count = data.get('roach_count', 1)
+        if not isinstance(roach_count, int) or roach_count < 1:
+            raise ValueError("Roach count must be a positive integer")
+
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute('''
@@ -174,9 +221,9 @@ class Database:
                 WHERE id = ?
             ''', (
                 data.get('timestamp'),
-                data['location'],
+                data['location'].strip(),
                 data.get('room_type'),
-                data.get('roach_count', 1),
+                roach_count,
                 data.get('roach_size'),
                 data.get('roach_type'),
                 data.get('photo_path'),
@@ -198,7 +245,13 @@ class Database:
 
         Returns:
             bool: True if deletion successful
+
+        Raises:
+            ValueError: If sighting_id is invalid
         """
+        if not isinstance(sighting_id, int) or sighting_id < 1:
+            raise ValueError("Sighting ID must be a positive integer")
+
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute('DELETE FROM sightings WHERE id = ?', (sighting_id,))
@@ -279,13 +332,24 @@ class Database:
 
         Returns:
             List[Dict]: Matching sighting records
+
+        Raises:
+            ValueError: If query is invalid
         """
+        if not query or not isinstance(query, str):
+            raise ValueError("Query must be a non-empty string")
+
+        # Sanitize query by escaping SQL wildcards to prevent wildcard injection
+        # User can still use wildcards, but they must be explicit in their input
+        sanitized_query = query.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
+        search_pattern = f'%{sanitized_query}%'
+
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            search_pattern = f'%{query}%'
             cursor.execute('''
                 SELECT * FROM sightings
-                WHERE location LIKE ? OR notes LIKE ?
+                WHERE location LIKE ? ESCAPE '\\'
+                   OR notes LIKE ? ESCAPE '\\'
                 ORDER BY timestamp DESC
             ''', (search_pattern, search_pattern))
             return [dict(row) for row in cursor.fetchall()]

@@ -12,13 +12,14 @@ import os
 import csv
 from datetime import datetime
 from typing import List, Dict, Optional
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image as RLImage
 from reportlab.lib import colors
 from werkzeug.utils import secure_filename
+from html import escape
 
 
 def allowed_file(filename: str, allowed_extensions: set) -> bool:
@@ -36,7 +37,7 @@ def allowed_file(filename: str, allowed_extensions: set) -> bool:
            filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 
-def process_and_save_photo(file, upload_folder: str, max_size: tuple = (1200, 1200)) -> str:
+def process_and_save_photo(file, upload_folder: str, max_size: tuple = (1200, 1200), max_file_size: int = 16 * 1024 * 1024) -> Optional[str]:
     """
     Process and save uploaded photo with resizing.
 
@@ -44,38 +45,86 @@ def process_and_save_photo(file, upload_folder: str, max_size: tuple = (1200, 12
         file: File object from request
         upload_folder: Directory to save the file
         max_size: Maximum dimensions (width, height)
+        max_file_size: Maximum file size in bytes (default 16MB)
 
     Returns:
-        str: Relative path to saved file
+        str or None: Relative path to saved file, or None if no file provided
+
+    Raises:
+        ValueError: If file is invalid, too large, or not an image
+        IOError: If upload folder is not writable or file cannot be saved
     """
     if not file or not file.filename:
         return None
 
+    # Validate upload folder exists and is writable
+    if not os.path.exists(upload_folder):
+        raise IOError(f"Upload folder does not exist: {upload_folder}")
+    if not os.access(upload_folder, os.W_OK):
+        raise IOError(f"Upload folder is not writable: {upload_folder}")
+
+    # Check file size before processing (seek to end to get size)
+    file.seek(0, os.SEEK_END)
+    file_size = file.tell()
+    file.seek(0)  # Reset to beginning
+
+    if file_size > max_file_size:
+        raise ValueError(f"File too large: {file_size} bytes (max: {max_file_size} bytes)")
+
+    if file_size == 0:
+        raise ValueError("File is empty")
+
     # Generate unique filename
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     original_filename = secure_filename(file.filename)
+    if not original_filename:
+        raise ValueError("Invalid filename")
+
     filename = f"{timestamp}_{original_filename}"
     filepath = os.path.join(upload_folder, filename)
 
-    # Open and resize image
-    image = Image.open(file)
+    try:
+        # Open and validate image
+        image = Image.open(file)
+        image.verify()  # Verify it's a valid image
+        file.seek(0)  # Reset after verify
+        image = Image.open(file)  # Re-open after verify
 
-    # Convert RGBA to RGB if necessary
-    if image.mode in ('RGBA', 'LA', 'P'):
-        background = Image.new('RGB', image.size, (255, 255, 255))
-        if image.mode == 'P':
-            image = image.convert('RGBA')
-        background.paste(image, mask=image.split()[-1] if image.mode == 'RGBA' else None)
-        image = background
+        # Check image dimensions are reasonable (prevent decompression bombs)
+        if image.width * image.height > 178956970:  # ~178 megapixels
+            raise ValueError("Image dimensions too large")
 
-    # Resize maintaining aspect ratio
-    image.thumbnail(max_size, Image.Resampling.LANCZOS)
+        # Convert RGBA to RGB if necessary
+        if image.mode in ('RGBA', 'LA', 'P'):
+            background = Image.new('RGB', image.size, (255, 255, 255))
+            if image.mode == 'P':
+                image = image.convert('RGBA')
+            background.paste(image, mask=image.split()[-1] if image.mode == 'RGBA' else None)
+            image = background
+        elif image.mode not in ('RGB', 'L'):
+            image = image.convert('RGB')
 
-    # Save optimized image
-    image.save(filepath, 'JPEG', quality=85, optimize=True)
+        # Resize maintaining aspect ratio
+        image.thumbnail(max_size, Image.Resampling.LANCZOS)
 
-    # Return relative path for database storage
-    return os.path.join('static/uploads', filename)
+        # Save optimized image
+        image.save(filepath, 'JPEG', quality=85, optimize=True)
+
+        # Return relative path for database storage
+        return os.path.join('static/uploads', filename)
+
+    except UnidentifiedImageError:
+        raise ValueError("File is not a valid image")
+    except (IOError, OSError) as e:
+        raise IOError(f"Failed to process image: {str(e)}")
+    except Exception as e:
+        # Clean up any partially written file
+        if os.path.exists(filepath):
+            try:
+                os.remove(filepath)
+            except OSError:
+                pass
+        raise ValueError(f"Image processing failed: {str(e)}")
 
 
 def generate_pdf_report(sightings: List[Dict], output_path: str) -> str:
@@ -141,16 +190,17 @@ def generate_pdf_report(sightings: List[Dict], output_path: str) -> str:
             try:
                 dt = datetime.fromisoformat(timestamp)
                 timestamp = dt.strftime('%B %d, %Y at %I:%M %p')
-            except:
-                pass
+            except (ValueError, TypeError):
+                pass  # Keep original timestamp if parsing fails
 
+        # Sanitize all text fields to prevent XML parsing errors
         details = [
-            ['Timestamp:', timestamp],
-            ['Location:', sighting.get('location', 'N/A')],
-            ['Room Type:', sighting.get('room_type', 'N/A')],
-            ['Roach Count:', str(sighting.get('roach_count', 1))],
-            ['Roach Size:', sighting.get('roach_size', 'N/A')],
-            ['Time of Day:', sighting.get('time_of_day', 'N/A')],
+            ['Timestamp:', escape(str(timestamp))],
+            ['Location:', escape(str(sighting.get('location', 'N/A')))],
+            ['Room Type:', escape(str(sighting.get('room_type', 'N/A')))],
+            ['Roach Count:', escape(str(sighting.get('roach_count', 1)))],
+            ['Roach Size:', escape(str(sighting.get('roach_size', 'N/A')))],
+            ['Time of Day:', escape(str(sighting.get('time_of_day', 'N/A')))],
         ]
 
         table = Table(details, colWidths=[1.5 * inch, 4.5 * inch])
@@ -164,21 +214,23 @@ def generate_pdf_report(sightings: List[Dict], output_path: str) -> str:
         ]))
         story.append(table)
 
-        # Notes
+        # Notes (sanitized to prevent XML parsing errors)
         if sighting.get('notes'):
             story.append(Spacer(1, 0.1 * inch))
-            story.append(Paragraph(f"<b>Notes:</b> {sighting['notes']}", styles['Normal']))
+            sanitized_notes = escape(str(sighting['notes']))
+            story.append(Paragraph(f"<b>Notes:</b> {sanitized_notes}", styles['Normal']))
 
         # Photo if available
         if sighting.get('photo_path'):
             try:
                 photo_path = sighting['photo_path']
-                if os.path.exists(photo_path):
+                if os.path.exists(photo_path) and os.path.isfile(photo_path):
                     img = RLImage(photo_path, width=3 * inch, height=3 * inch, kind='proportional')
                     story.append(Spacer(1, 0.1 * inch))
                     story.append(img)
-            except:
-                pass
+            except (IOError, OSError, ValueError) as e:
+                # Log error but continue with report generation
+                story.append(Paragraph(f"<i>[Photo unavailable: {escape(str(e))}]</i>", styles['Normal']))
 
         story.append(Spacer(1, 0.3 * inch))
 
@@ -221,13 +273,16 @@ def format_timestamp(timestamp_str: str) -> str:
         timestamp_str: ISO format timestamp string
 
     Returns:
-        str: Formatted timestamp
+        str: Formatted timestamp or original string if parsing fails
     """
+    if not timestamp_str:
+        return 'N/A'
+
     try:
         dt = datetime.fromisoformat(timestamp_str)
         return dt.strftime('%B %d, %Y at %I:%M %p')
-    except:
-        return timestamp_str
+    except (ValueError, TypeError, AttributeError):
+        return str(timestamp_str)
 
 
 def get_time_of_day(timestamp_str: str = None) -> str:
@@ -238,7 +293,7 @@ def get_time_of_day(timestamp_str: str = None) -> str:
         timestamp_str: ISO format timestamp string (optional, uses current time if None)
 
     Returns:
-        str: Time category (Morning, Afternoon, Evening, Night)
+        str: Time category (Morning, Afternoon, Evening, Night, or Unknown if parsing fails)
     """
     try:
         if timestamp_str:
@@ -255,5 +310,5 @@ def get_time_of_day(timestamp_str: str = None) -> str:
             return 'Evening'
         else:
             return 'Night'
-    except:
+    except (ValueError, TypeError, AttributeError):
         return 'Unknown'
