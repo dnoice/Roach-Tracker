@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Sighting #{{ sighting.id }} - Roach Tracker{% endblock %}
+
+{% block content %}
+<div class="detail-page">
+    <header class="page-header">
+        <h1>Sighting #{{ sighting.id }}</h1>
+        <p class="subtitle">{{ sighting.location }}</p>
+    </header>
+
+    <div class="detail-container">
+        <!-- Photo -->
+        {% if sighting.photo_path %}
+            <div class="detail-photo">
+                <img src="{{ url_for('static', filename=sighting.photo_path.replace('static/', '')) }}"
+                     alt="Sighting photo">
+            </div>
+        {% endif %}
+
+        <!-- Details -->
+        <div class="detail-info">
+            <h2>Details</h2>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Date & Time</label>
+                    <value>{{ format_timestamp(sighting.timestamp) }}</value>
+                </div>
+
+                <div class="info-item">
+                    <label>Location</label>
+                    <value>{{ sighting.location }}</value>
+                </div>
+
+                {% if sighting.room_type %}
+                    <div class="info-item">
+                        <label>Room Type</label>
+                        <value>{{ sighting.room_type }}</value>
+                    </div>
+                {% endif %}
+
+                <div class="info-item">
+                    <label>Roach Count</label>
+                    <value>{{ sighting.roach_count }}</value>
+                </div>
+
+                {% if sighting.roach_size %}
+                    <div class="info-item">
+                        <label>Roach Size</label>
+                        <value>{{ sighting.roach_size }}</value>
+                    </div>
+                {% endif %}
+
+                {% if sighting.roach_type %}
+                    <div class="info-item">
+                        <label>Roach Type</label>
+                        <value>{{ sighting.roach_type }}</value>
+                    </div>
+                {% endif %}
+
+                {% if sighting.time_of_day %}
+                    <div class="info-item">
+                        <label>Time of Day</label>
+                        <value>{{ sighting.time_of_day }}</value>
+                    </div>
+                {% endif %}
+
+                {% if sighting.weather %}
+                    <div class="info-item">
+                        <label>Weather</label>
+                        <value>{{ sighting.weather }}</value>
+                    </div>
+                {% endif %}
+
+                {% if sighting.temperature %}
+                    <div class="info-item">
+                        <label>Temperature</label>
+                        <value>{{ sighting.temperature }}°F</value>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if sighting.notes %}
+                <div class="notes-section">
+                    <h3>Notes</h3>
+                    <p>{{ sighting.notes }}</p>
+                </div>
+            {% endif %}
+
+            <div class="metadata">
+                <small>Created: {{ format_timestamp(sighting.created_at) }}</small>
+                {% if sighting.updated_at and sighting.updated_at != sighting.created_at %}
+                    <small>Updated: {{ format_timestamp(sighting.updated_at) }}</small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="detail-actions">
+        <a href="{{ url_for('edit_sighting', sighting_id=sighting.id) }}" class="btn-primary">Edit</a>
+        <a href="{{ url_for('view_sightings') }}" class="btn-secondary">Back to List</a>
+        <form action="{{ url_for('delete_sighting', sighting_id=sighting.id) }}" method="POST"
+              onsubmit="return confirm('Are you sure you want to delete this sighting?');"
+              style="display: inline;">
+            <button type="submit" class="btn-danger">Delete</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

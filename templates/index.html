@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Roach Tracker{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <header class="page-header">
+        <h1>Dashboard</h1>
+        <p class="subtitle">Overview of roach sighting activity</p>
+    </header>
+
+    <!-- Quick Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.total_sightings }}</div>
+            <div class="stat-label">Total Sightings</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.total_roaches }}</div>
+            <div class="stat-label">Total Roaches</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.locations|length }}</div>
+            <div class="stat-label">Unique Locations</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">
+                {% if stats.recent_trend %}
+                    {{ stats.recent_trend[0].count }}
+                {% else %}
+                    0
+                {% endif %}
+            </div>
+            <div class="stat-label">Today</div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="action-section">
+        <h2>Quick Actions</h2>
+        <div class="action-grid">
+            <a href="{{ url_for('log_sighting') }}" class="action-btn action-primary">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+                <span>Log New Sighting</span>
+            </a>
+            <a href="{{ url_for('view_sightings') }}" class="action-btn action-secondary">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12h18M3 6h18M3 18h18"/>
+                </svg>
+                <span>View All Sightings</span>
+            </a>
+            <a href="{{ url_for('statistics') }}" class="action-btn action-secondary">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 3v18h18M7 16l4-4 4 4 6-6"/>
+                </svg>
+                <span>View Statistics</span>
+            </a>
+            <a href="{{ url_for('export_pdf') }}" class="action-btn action-secondary">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14m-7-7l7 7 7-7"/>
+                </svg>
+                <span>Export PDF Report</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Sightings -->
+    <div class="recent-section">
+        <h2>Recent Sightings</h2>
+        {% if recent_sightings %}
+            <div class="sightings-list">
+                {% for sighting in recent_sightings %}
+                    <div class="sighting-card">
+                        <div class="sighting-header">
+                            <h3>{{ sighting.location }}</h3>
+                            <span class="badge">{{ sighting.roach_count }} roach{% if sighting.roach_count != 1 %}es{% endif %}</span>
+                        </div>
+                        <div class="sighting-meta">
+                            <span class="meta-item">
+                                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 6v6l4 2"/>
+                                </svg>
+                                {{ format_timestamp(sighting.timestamp) }}
+                            </span>
+                            {% if sighting.roach_size %}
+                                <span class="meta-item">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2v20M2 12h20"/>
+                                    </svg>
+                                    {{ sighting.roach_size }}
+                                </span>
+                            {% endif %}
+                        </div>
+                        {% if sighting.notes %}
+                            <p class="sighting-notes">{{ sighting.notes[:100] }}{% if sighting.notes|length > 100 %}...{% endif %}</p>
+                        {% endif %}
+                        <div class="sighting-actions">
+                            <a href="{{ url_for('view_sighting', sighting_id=sighting.id) }}" class="btn-link">View Details →</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="view-all-link">
+                <a href="{{ url_for('view_sightings') }}" class="btn-secondary">View All Sightings</a>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p>No sightings logged yet.</p>
+                <a href="{{ url_for('log_sighting') }}" class="btn-primary">Log Your First Sighting</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Top Locations -->
+    {% if stats.locations %}
+        <div class="locations-section">
+            <h2>Top Problem Areas</h2>
+            <div class="location-list">
+                {% for location in stats.locations[:5] %}
+                    <div class="location-item">
+                        <div class="location-name">{{ location.location }}</div>
+                        <div class="location-count">
+                            <div class="location-bar" style="width: {{ (location.count / stats.locations[0].count * 100) }}%"></div>
+                            <span class="location-value">{{ location.count }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

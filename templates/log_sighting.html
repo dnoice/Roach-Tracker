@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Log Sighting - Roach Tracker{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <header class="page-header">
+        <h1>Log New Sighting</h1>
+        <p class="subtitle">Document a cockroach encounter</p>
+    </header>
+
+    <form action="{{ url_for('log_sighting') }}" method="POST" enctype="multipart/form-data" class="sighting-form">
+        <!-- Date and Time -->
+        <div class="form-section">
+            <h2>When?</h2>
+            <div class="form-group">
+                <label for="timestamp">Date & Time</label>
+                <input type="datetime-local" id="timestamp" name="timestamp" class="form-control">
+                <small class="form-help">Leave blank to use current time</small>
+            </div>
+        </div>
+
+        <!-- Location -->
+        <div class="form-section">
+            <h2>Where?</h2>
+            <div class="form-group">
+                <label for="location">Location *</label>
+                <input type="text" id="location" name="location" class="form-control" required
+                       placeholder="e.g., Kitchen, Bathroom, Bedroom">
+            </div>
+            <div class="form-group">
+                <label for="room_type">Room Type</label>
+                <select id="room_type" name="room_type" class="form-control">
+                    <option value="">Select...</option>
+                    <option value="Kitchen">Kitchen</option>
+                    <option value="Bathroom">Bathroom</option>
+                    <option value="Bedroom">Bedroom</option>
+                    <option value="Living Room">Living Room</option>
+                    <option value="Hallway">Hallway</option>
+                    <option value="Basement">Basement</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Roach Details -->
+        <div class="form-section">
+            <h2>What Did You See?</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="roach_count">How Many?</label>
+                    <input type="number" id="roach_count" name="roach_count" class="form-control"
+                           min="1" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="roach_size">Size</label>
+                    <select id="roach_size" name="roach_size" class="form-control">
+                        <option value="">Select...</option>
+                        <option value="Small (< 1cm)">Small (< 1cm)</option>
+                        <option value="Medium (1-2cm)">Medium (1-2cm)</option>
+                        <option value="Large (2-3cm)">Large (2-3cm)</option>
+                        <option value="Very Large (> 3cm)">Very Large (> 3cm)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="roach_type">Type (if known)</label>
+                <select id="roach_type" name="roach_type" class="form-control">
+                    <option value="">Select...</option>
+                    <option value="German Cockroach">German Cockroach</option>
+                    <option value="American Cockroach">American Cockroach</option>
+                    <option value="Oriental Cockroach">Oriental Cockroach</option>
+                    <option value="Brown-Banded Cockroach">Brown-Banded Cockroach</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Photo -->
+        <div class="form-section">
+            <h2>Photo Evidence</h2>
+            <div class="form-group">
+                <label for="photo">Upload Photo</label>
+                <input type="file" id="photo" name="photo" class="form-control" accept="image/*" capture="environment">
+                <small class="form-help">Accepted: JPG, PNG, GIF, WEBP (max 16MB)</small>
+            </div>
+            <div id="photoPreview" class="photo-preview"></div>
+        </div>
+
+        <!-- Additional Details -->
+        <div class="form-section">
+            <h2>Additional Information</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="weather">Weather</label>
+                    <select id="weather" name="weather" class="form-control">
+                        <option value="">Select...</option>
+                        <option value="Sunny">Sunny</option>
+                        <option value="Rainy">Rainy</option>
+                        <option value="Humid">Humid</option>
+                        <option value="Dry">Dry</option>
+                        <option value="Stormy">Stormy</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="temperature">Temperature (°F)</label>
+                    <input type="number" id="temperature" name="temperature" class="form-control"
+                           step="0.1" placeholder="e.g., 72.5">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="notes">Notes</label>
+                <textarea id="notes" name="notes" class="form-control" rows="4"
+                          placeholder="Any additional observations, behavior, or context..."></textarea>
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Log Sighting</button>
+            <a href="{{ url_for('index') }}" class="btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Photo preview
+    document.getElementById('photo').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('photoPreview');
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = '<img src="' + e.target.result + '" alt="Preview">';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.innerHTML = '';
+        }
+    });
+
+    // Auto-set current datetime
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('timestamp').value = now.toISOString().slice(0, 16);
+</script>
+{% endblock %}
