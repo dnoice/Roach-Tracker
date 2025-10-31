@@ -1,5 +1,7 @@
 # Roach Tracker
 
+![Roach Tracker Banner](https://github.com/dnoice/Roach-Tracker/blob/main/global-assets/images/roach-tracker-banner.png)
+
 **Local-First Cockroach Sighting Documentation System**
 
 You have the right to a habitable living space. Cockroach infestations violate the implied warranty of habitability in most jurisdictions. This tool helps you exercise your rights through professional documentation tools.
