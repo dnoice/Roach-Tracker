@@ -39,8 +39,10 @@
                         <li><a href="{{ url_for('admin_users') }}" class="nav-link">Users</a></li>
                     {% endif %}
                     <li class="nav-user">
-                        <span class="nav-username">{{ current_user.username }}</span>
-                        <span class="nav-role">({{ current_user.role }})</span>
+                        <a href="{{ url_for('profile') }}" class="nav-link" style="padding: 0.25rem 0.5rem;">
+                            <span class="nav-username">{{ current_user.username }}</span>
+                            <span class="nav-role">({{ current_user.role }})</span>
+                        </a>
                     </li>
                     <li><a href="{{ url_for('logout') }}" class="nav-link">Logout</a></li>
                 {% else %}

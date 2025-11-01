@@ -3,7 +3,7 @@ File: models.py
 Path: app/models.py
 Purpose: Database schema and operations for roach sighting tracking
 Author: dnoice + Claude AI
-Version: 1.1.0
+Version: 1.2.0
 Created: 2025-10-31
 Updated: 2025-10-31
 """
@@ -13,6 +13,9 @@ from datetime import datetime
 from typing import List, Dict, Optional
 from contextlib import contextmanager
 from werkzeug.security import generate_password_hash, check_password_hash
+from app.validators import (
+    validate_email, validate_username, validate_password_strength, validate_full_name
+)
 
 
 class Database:
@@ -136,6 +139,41 @@ class Database:
                 # Migrate existing sightings table
                 cursor.execute('ALTER TABLE sightings ADD COLUMN user_id INTEGER')
                 cursor.execute('ALTER TABLE sightings ADD COLUMN property_id INTEGER')
+
+            # Audit log table for security events
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS audit_log (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    event_type TEXT NOT NULL,
+                    username TEXT,
+                    user_id INTEGER,
+                    details TEXT,
+                    ip_address TEXT,
+                    success INTEGER DEFAULT 1,
+                    timestamp TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+
+            # Create indices for performance
+            # Users indices
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_users_is_active ON users(is_active)')
+
+            # Sightings indices
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_sightings_user_id ON sightings(user_id)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_sightings_property_id ON sightings(property_id)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_sightings_timestamp ON sightings(timestamp)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_sightings_location ON sightings(location)')
+
+            # Properties indices
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_properties_created_by ON properties(created_by)')
+
+            # Audit log indices
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_audit_log_event_type ON audit_log(event_type)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_audit_log_username ON audit_log(username)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_audit_log_timestamp ON audit_log(timestamp)')
 
     def create_sighting(self, data: Dict) -> int:
         """
@@ -429,7 +467,7 @@ class Database:
     def create_user(self, username: str, email: str, password: str,
                     role: str = 'resident', full_name: Optional[str] = None) -> int:
         """
-        Create a new user account.
+        Create a new user account with comprehensive validation.
 
         Args:
             username: Unique username
@@ -444,13 +482,28 @@ class Database:
         Raises:
             ValueError: If validation fails or user already exists
         """
-        # Validate inputs
-        if not username or not isinstance(username, str) or len(username.strip()) < 3:
-            raise ValueError("Username must be at least 3 characters")
-        if not email or not isinstance(email, str) or '@' not in email:
-            raise ValueError("Valid email address is required")
-        if not password or not isinstance(password, str) or len(password) < 8:
-            raise ValueError("Password must be at least 8 characters")
+        # Validate username
+        is_valid, error = validate_username(username)
+        if not is_valid:
+            raise ValueError(error)
+
+        # Validate email
+        is_valid, error = validate_email(email)
+        if not is_valid:
+            raise ValueError(error)
+
+        # Validate password strength
+        is_valid, error = validate_password_strength(password)
+        if not is_valid:
+            raise ValueError(error)
+
+        # Validate full name if provided
+        if full_name:
+            is_valid, error = validate_full_name(full_name)
+            if not is_valid:
+                raise ValueError(error)
+
+        # Validate role
         if role not in ('admin', 'resident', 'property_manager'):
             raise ValueError("Invalid role. Must be admin, resident, or property_manager")
 
