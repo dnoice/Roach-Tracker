@@ -49,11 +49,33 @@ cd Roach-Tracker
 # 3. Create admin user
 python create_admin.py
 
-# 4. Start the application
+# 4. Start the application (choose one method)
+
+# Method A: Using shell script (recommended)
 ./run.sh
+
+# Method B: Using Python directly
+python run.py
+
+# Method C: Using Flask CLI
+export FLASK_APP=app
+flask run
 ```
 
 Then open your browser to `http://localhost:5000/login` and log in with your admin credentials
+
+### Running with Custom Options
+
+```bash
+# Specify host and port
+python run.py --host 0.0.0.0 --port 8000
+
+# Enable debug mode
+python run.py --debug
+
+# Production mode
+python run.py --no-debug --host 0.0.0.0 --port 5000
+```
 
 ### Verification
 
@@ -61,6 +83,20 @@ To verify your installation:
 
 ```bash
 ./verify.sh
+```
+
+### Troubleshooting
+
+**Import Errors**: Always run the application from the project root directory, not from within subdirectories.
+
+```bash
+# ✓ Correct - run from project root
+cd Roach-Tracker
+python run.py
+
+# ✗ Wrong - don't run from app directory
+cd Roach-Tracker/app
+python main.py  # This will fail!
 ```
 
 ---

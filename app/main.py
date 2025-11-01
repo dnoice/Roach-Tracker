@@ -790,3 +790,31 @@ def register_routes(app):
         current_app.logger.error(f"Internal server error: {error}")
         flash('An internal error occurred. Please try again.', 'error')
         return render_template('index.html'), 500
+
+
+# Prevent direct execution - this module should be imported, not run
+if __name__ == '__main__':
+    print()
+    print("=" * 70)
+    print("  ERROR: This file should not be run directly!")
+    print("=" * 70)
+    print()
+    print("  app/main.py is a module that defines routes, not an entry point.")
+    print()
+    print("  To run the application, use one of these methods:")
+    print()
+    print("  1. Using the run script (recommended):")
+    print("     ./run.sh")
+    print()
+    print("  2. Using the Python entry point:")
+    print("     python run.py")
+    print()
+    print("  3. Using Flask CLI:")
+    print("     flask run")
+    print()
+    print("  For setup instructions, see README.md")
+    print()
+    print("=" * 70)
+    print()
+    import sys
+    sys.exit(1)
