@@ -58,29 +58,66 @@ Roach Tracker is a local-first web application built with Flask (Python) that pr
 
 ```
 Roach-Tracker/
-├── app/
-│   ├── __init__.py       # Flask application factory
-│   ├── main.py           # Routes and view functions
-│   ├── models.py         # Database models and operations
-│   └── utils.py          # Helper functions
-├── templates/            # Jinja2 HTML templates
-│   ├── base.html         # Base layout template
-│   ├── index.html        # Dashboard
-│   ├── log_sighting.html # Sighting entry form
-│   ├── view_sightings.html # All sightings list
-│   ├── view_sighting.html  # Single sighting detail
-│   ├── edit_sighting.html  # Edit form
-│   └── statistics.html   # Analytics dashboard
-├── static/
+├── app/                       # Backend application package
+│   ├── __init__.py           # Flask application factory
+│   ├── auth.py               # Authentication decorators and RBAC
+│   ├── main.py               # Routes and view controllers
+│   ├── models.py             # Database models and ORM operations
+│   ├── security.py           # Security logging and rate limiting
+│   ├── utils.py              # Helper functions (photos, PDFs, CSVs)
+│   ├── validators.py         # Input validation and sanitization
+│   └── README.md             # Backend documentation
+├── templates/                 # Jinja2 HTML templates (13 total)
+│   ├── base.html             # Base layout template
+│   ├── index.html            # Dashboard
+│   ├── login.html            # Login page
+│   ├── register.html         # Registration page
+│   ├── profile.html          # User profile
+│   ├── change_password.html  # Password change
+│   ├── admin_users.html      # User management (admin)
+│   ├── admin_create_user.html # Create user (admin)
+│   ├── log_sighting.html     # Sighting entry form
+│   ├── view_sightings.html   # All sightings list
+│   ├── view_sighting.html    # Single sighting detail
+│   ├── edit_sighting.html    # Edit form
+│   ├── statistics.html       # Analytics dashboard
+│   └── README.md             # Templates documentation
+├── static/                    # Static frontend assets
 │   ├── css/
-│   │   └── style.css     # Responsive styles
+│   │   └── style.css         # Responsive styles (~530 lines)
 │   ├── js/
-│   │   └── main.js       # Client-side JavaScript
-│   └── uploads/          # Photo storage
-├── data/
-│   └── roach_tracker.db  # SQLite database
-├── exports/              # Generated reports
-└── docs/branches/        # AI continuity logs
+│   │   └── main.js           # Client-side JavaScript (~157 lines)
+│   ├── uploads/              # Photo storage (user uploads)
+│   └── README.md             # Frontend documentation
+├── docs/                      # Project documentation
+│   ├── ARCHITECTURE.md       # System architecture (this file)
+│   ├── AUTHENTICATION.md     # Auth system guide
+│   ├── DEVELOPMENT.md        # Developer guide
+│   ├── README.md             # Documentation hub
+│   └── branches/claude/      # AI development session logs
+│       ├── roach-tracker-kickoff-011CUfvod8CFBar781PUVhMy/
+│       └── roach-development-session-two-011CUg7jBTWttm3WXuHyGjig/
+├── exports/                   # Generated PDF and CSV reports
+│   └── README.md             # Export system documentation
+├── global-assets/             # Brand and marketing assets
+│   └── images/
+│       ├── roach-tracker-banner.png
+│       └── README.md         # Image documentation
+├── data/                      # SQLite database (created at runtime)
+│   └── roach_tracker.db
+├── DOCUMENTATION_SUMMARY.md   # Complete documentation index
+├── QUICK_START.md             # Fast-track setup guide
+├── README.md                  # Main project documentation
+├── SAMPLE_COMPLAINT_LETTER.txt # Legal complaint template
+├── LICENSE                    # Software license
+├── requirements.txt           # Python dependencies
+├── .env.example               # Environment variable template
+├── run.py                     # Application entry point (primary)
+├── create_admin.py            # Admin user creation script
+├── check_setup.py             # Environment verification script
+├── setup.sh                   # Automated setup script
+├── run.sh                     # Launch script (wrapper)
+└── verify.sh                  # Installation verification
 ```
 
 ---

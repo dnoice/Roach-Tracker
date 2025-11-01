@@ -21,29 +21,58 @@ Roach-Tracker/
 │   ├── auth.py              # Authentication decorators
 │   ├── security.py          # Security logging and rate limiting
 │   ├── validators.py        # Input validation utilities
-│   └── utils.py             # Helper functions
-├── templates/               # HTML templates
+│   ├── utils.py             # Helper functions
+│   └── README.md            # Backend documentation
+├── templates/               # HTML templates (13 total)
 │   ├── base.html           # Base template
+│   ├── index.html          # Dashboard
 │   ├── login.html          # Login page
 │   ├── register.html       # Registration page
 │   ├── profile.html        # User profile
-│   └── ...                 # Other templates
-├── static/                  # Static files
-│   ├── css/                # Stylesheets
-│   ├── js/                 # JavaScript
-│   └── uploads/            # Photo uploads
-├── data/                    # SQLite database
+│   ├── change_password.html # Password change
+│   ├── admin_users.html    # User management (admin)
+│   ├── admin_create_user.html # Create user (admin)
+│   ├── log_sighting.html   # Sighting entry form
+│   ├── view_sightings.html # All sightings list
+│   ├── view_sighting.html  # Single sighting detail
+│   ├── edit_sighting.html  # Edit form
+│   ├── statistics.html     # Analytics dashboard
+│   └── README.md           # Templates documentation
+├── static/                  # Static frontend assets
+│   ├── css/
+│   │   └── style.css       # Responsive styles
+│   ├── js/
+│   │   └── main.js         # Client-side JavaScript
+│   ├── uploads/            # Photo uploads (user photos)
+│   └── README.md           # Frontend documentation
+├── docs/                    # Project documentation
+│   ├── ARCHITECTURE.md     # System architecture
+│   ├── AUTHENTICATION.md   # Auth system guide
+│   ├── DEVELOPMENT.md      # Developer guide (this file)
+│   ├── README.md           # Documentation hub
+│   └── branches/claude/    # AI development session logs
+├── exports/                 # Generated PDF and CSV reports
+│   └── README.md           # Export documentation
+├── global-assets/           # Brand and marketing assets
+│   └── images/
+│       ├── roach-tracker-banner.png
+│       └── README.md       # Image documentation
+├── data/                    # SQLite database (created at runtime)
 │   └── roach_tracker.db    # Main database
-├── exports/                 # Generated reports
+├── DOCUMENTATION_SUMMARY.md # Complete documentation index
+├── QUICK_START.md           # Fast-track setup guide
+├── README.md                # Main project documentation
+├── SAMPLE_COMPLAINT_LETTER.txt # Legal complaint template
+├── LICENSE                  # Software license
+├── requirements.txt         # Python dependencies
+├── .env.example             # Environment variable template
+├── .env                     # Environment variables (created by setup, not in git)
 ├── run.py                   # Application entry point ⭐
 ├── create_admin.py          # Admin user creation script
 ├── check_setup.py           # Environment verification script
-├── setup.sh                 # Setup script
+├── setup.sh                 # Automated setup script
 ├── run.sh                   # Run script (wrapper for run.py)
-├── verify.sh                # Verification script
-├── requirements.txt         # Python dependencies
-├── .env                     # Environment variables (created by setup)
-└── README.md               # Main documentation
+└── verify.sh                # Installation verification
 ```
 
 ---

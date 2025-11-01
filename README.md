@@ -183,23 +183,55 @@ This application runs perfectly in Termux with PRoot-distro (Ubuntu). The develo
 
 ```
 Roach-Tracker/
-├── app/
-│   ├── __init__.py       # Flask app initialization
-│   ├── main.py           # Routes and application logic
-│   ├── models.py         # Database schema and operations
-│   └── utils.py          # Helper functions (photos, PDFs, CSVs)
-├── templates/            # HTML templates
-├── static/
-│   ├── css/              # Stylesheets
-│   ├── js/               # JavaScript
-│   └── uploads/          # Photo storage
-├── data/                 # SQLite database
-├── exports/              # Generated reports
-├── docs/branches/        # Branch specific documentation, AI continuity docs and session logs
-├── requirements.txt      # Python dependencies
-├── setup.sh              # Setup script
-├── run.sh                # Launch script
-└── verify.sh             # Verification script
+├── app/                       # Backend application
+│   ├── __init__.py           # Flask app initialization
+│   ├── auth.py               # Authentication decorators
+│   ├── main.py               # Routes and application logic
+│   ├── models.py             # Database schema and operations
+│   ├── security.py           # Security logging and rate limiting
+│   ├── utils.py              # Helper functions (photos, PDFs, CSVs)
+│   ├── validators.py         # Input validation
+│   └── README.md             # Backend documentation
+├── templates/                 # Jinja2 HTML templates
+│   ├── base.html             # Base template
+│   ├── index.html            # Dashboard
+│   ├── login.html            # Login page
+│   ├── register.html         # Registration page
+│   ├── admin_users.html      # User management
+│   ├── profile.html          # User profile
+│   └── ...                   # Additional templates (13 total)
+├── static/                    # Static frontend assets
+│   ├── css/
+│   │   └── style.css         # Responsive styles
+│   ├── js/
+│   │   └── main.js           # Client-side JavaScript
+│   ├── uploads/              # Photo storage
+│   └── README.md             # Frontend documentation
+├── docs/                      # Documentation
+│   ├── ARCHITECTURE.md       # System architecture
+│   ├── AUTHENTICATION.md     # Auth system guide
+│   ├── DEVELOPMENT.md        # Developer guide
+│   ├── branches/claude/      # AI development session logs
+│   └── README.md             # Documentation hub
+├── exports/                   # Generated PDF and CSV reports
+│   └── README.md             # Export documentation
+├── global-assets/             # Brand assets
+│   └── images/
+│       ├── roach-tracker-banner.png
+│       └── README.md         # Image documentation
+├── data/                      # SQLite database (created at runtime)
+│   └── roach_tracker.db
+├── DOCUMENTATION_SUMMARY.md   # Complete documentation index
+├── QUICK_START.md             # Fast-track setup guide
+├── README.md                  # This file
+├── SAMPLE_COMPLAINT_LETTER.txt # Legal template
+├── requirements.txt           # Python dependencies
+├── run.py                     # Application entry point
+├── create_admin.py            # Admin user creation
+├── check_setup.py             # Environment verification
+├── setup.sh                   # Automated setup script
+├── run.sh                     # Launch script
+└── verify.sh                  # Installation verification
 ```
 
 ---
