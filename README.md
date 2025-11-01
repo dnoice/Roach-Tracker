@@ -32,6 +32,20 @@ Roach Tracker is a full-stack, local-first, privacy-focused web application for 
 - **PDF Generation**: ReportLab
 - **Mobile Support**: Fully responsive design
 
+### The Ten Commandments
+
+1. EVERY SINGLE file/document/script/artifact begins with a docstring containing: file name, relative path, purpose, author, version, and timestamps specific file type information (flags for .py files for exmaple) ECT.
+2. NO Box-Drawing Characters - Alignment over ornamentation.
+3. ALL terminal output uses a robust and comprehensive and dynamic implementation of "rich" for beauty and readability in the terminal.
+4. NO Emojis Where SVG Belongs - Stick to scalable graphics for all UI work.
+5. Design for Elegance - EVERY feature must be robust, comprehensive, intuitive, and visually coherent.
+6. ALL command lione tools/utilities MUST Default to an interactive menus when no flags are given - Dual-Mode UX - Clear for beginners, powerful for veterans.
+7. Document as You Build - EACH branch/commit updates corresponding markdowns (docs/branches/claude/branch-name/*.md
+8. ZERO Hardcoded Secrets - Environment configs live in ".env", never in code.
+9. Fail Gracefully, Log Beautifully - Errors must inform, not  frustrate.
+10. ABSOLUTLY ZERO stubs, to-dos or well do it at a later time!
+
+
 ---
 
 ## Quick Start
@@ -129,10 +143,10 @@ python main.py  # This will fail!
 ## Documentation
 
 - [QUICK_START.md](QUICK_START.md) - Detailed setup and usage guide
-- [AUTHENTICATION.md](AUTHENTICATION.md) - User authentication and management guide
-- [SECURITY_ENHANCEMENTS.md](SECURITY_ENHANCEMENTS.md) - Security features and code quality guide
-- [DEVELOPMENT.md](DEVELOPMENT.md) - Developer guide and troubleshooting
-- [ARCHITECTURE.md](ARCHITECTURE.md) - Technical design and structure
+- [AUTHENTICATION.md](docs/AUTHENTICATION.md) - User authentication and management guide
+- [SECURITY_ENHANCEMENTS.md](docs/branches/claude/SECURITY_ENHANCEMENTS.md) - Security features and code quality guide
+- [DEVELOPMENT.md](docs/DEVELOPMENT.md) - Developer guide and troubleshooting
+- [ARCHITECTURE.md](docs/ARCHITECTURE.md) - Technical design and structure
 - [SAMPLE_COMPLAINT_LETTER.txt](SAMPLE_COMPLAINT_LETTER.txt) - Template for formal complaints
 
 ---
@@ -171,7 +185,7 @@ Roach-Tracker/
 │   └── uploads/          # Photo storage
 ├── data/                 # SQLite database
 ├── exports/              # Generated reports
-├── docs/branches/        # AI continuity and session logs
+├── docs/branches/        # Branch specific documentation, AI continuity docs and session logs
 ├── requirements.txt      # Python dependencies
 ├── setup.sh              # Setup script
 ├── run.sh                # Launch script
@@ -187,22 +201,6 @@ Roach-Tracker/
 - **No Accounts**: No registration or personal data required
 - **Full Control**: You own all your data and photos
 
----
-
-## Contributing
-
-This project follows the **10 Golden Rules**:
-
-1. Unified metadata headers in all files
-2. No box-drawing characters (alignment over ornamentation)
-3. Rich terminal output for all CLI operations
-4. SVG graphics in UI (no emoji)
-5. Design for elegance, robustness, and intuitiveness
-6. Dual-mode UX (beginner-friendly + power-user features)
-7. Document as you build
-8. No hardcoded secrets (use .env)
-9. Fail gracefully with beautiful error logging
-10. Consistency over cleverness
 
 ---
 
@@ -275,7 +273,7 @@ For issues, questions, or contributions:
 - ✓ Least privilege access control
 - ✓ Complete audit trail for forensic analysis
 
-For detailed information, see: [SECURITY_ENHANCEMENTS.md](SECURITY_ENHANCEMENTS.md) and [DEVELOPMENT.md](DEVELOPMENT.md)
+For detailed information, see: [SECURITY_ENHANCEMENTS.md](docs/branches/claude/SECURITY_ENHANCEMENTS.md) and [DEVELOPMENT.md](docs/DEVELOPMENT.md)
 
 ### v1.1.0 (2025-10-31) - Authentication & Multi-User Support
 
@@ -303,7 +301,7 @@ For detailed information, see: [SECURITY_ENHANCEMENTS.md](SECURITY_ENHANCEMENTS.
 - `templates/register.html` - User registration page
 - `templates/admin_users.html` - Admin user management interface
 - `templates/admin_create_user.html` - Admin user creation form
-- `AUTHENTICATION.md` - Complete authentication documentation
+- `docs/AUTHENTICATION.md` - Complete authentication documentation
 
 **Code Updates**:
 - Updated all routes with @login_required decorators
@@ -318,7 +316,7 @@ For detailed information, see: [SECURITY_ENHANCEMENTS.md](SECURITY_ENHANCEMENTS.
 - Updated quick start guide with admin creation step
 - Added authentication to feature list
 
-For detailed information, see: [AUTHENTICATION.md](AUTHENTICATION.md)
+For detailed information, see: [AUTHENTICATION.md](docs/AUTHENTICATION.md)
 
 ### v1.0.1 (2025-10-31) - Security & Stability Update
 
