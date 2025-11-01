@@ -144,7 +144,7 @@ python main.py  # This will fail!
 
 - [QUICK_START.md](QUICK_START.md) - Detailed setup and usage guide
 - [AUTHENTICATION.md](docs/AUTHENTICATION.md) - User authentication and management guide
-- [SECURITY_ENHANCEMENTS.md](docs/branches/claude/SECURITY_ENHANCEMENTS.md) - Security features and code quality guide
+- [SECURITY_ENHANCEMENTS.md](docs/branches/claude/roach-development-session-two-011CUg7jBTWttm3WXuHyGjig/SECURITY_ENHANCEMENTS.md) - Security features and code quality guide
 - [DEVELOPMENT.md](docs/DEVELOPMENT.md) - Developer guide and troubleshooting
 - [ARCHITECTURE.md](docs/ARCHITECTURE.md) - Technical design and structure
 - [SAMPLE_COMPLAINT_LETTER.txt](SAMPLE_COMPLAINT_LETTER.txt) - Template for formal complaints
@@ -258,8 +258,8 @@ For issues, questions, or contributions:
 - `check_setup.py` - Environment verification script (150 lines)
 - `templates/profile.html` - User profile display
 - `templates/change_password.html` - Password change form
-- `SECURITY_ENHANCEMENTS.md` - Comprehensive security documentation (600+ lines)
-- `DEVELOPMENT.md` - Developer guide and troubleshooting (400+ lines)
+- `docs/branches/claude/roach-development-session-two-011CUg7jBTWttm3WXuHyGjig/SECURITY_ENHANCEMENTS.md` - Comprehensive security documentation (600+ lines)
+- `docs/DEVELOPMENT.md` - Developer guide and troubleshooting (400+ lines)
 
 **Security Events Tracked**:
 - Login success/failure, logout, registration
@@ -273,7 +273,7 @@ For issues, questions, or contributions:
 - ✓ Least privilege access control
 - ✓ Complete audit trail for forensic analysis
 
-For detailed information, see: [SECURITY_ENHANCEMENTS.md](docs/branches/claude/SECURITY_ENHANCEMENTS.md) and [DEVELOPMENT.md](docs/DEVELOPMENT.md)
+For detailed information, see: [SECURITY_ENHANCEMENTS.md](docs/branches/claude/roach-development-session-two-011CUg7jBTWttm3WXuHyGjig/SECURITY_ENHANCEMENTS.md) and [DEVELOPMENT.md](docs/DEVELOPMENT.md)
 
 ### v1.1.0 (2025-10-31) - Authentication & Multi-User Support
 
