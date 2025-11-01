@@ -130,6 +130,8 @@ python main.py  # This will fail!
 
 - [QUICK_START.md](QUICK_START.md) - Detailed setup and usage guide
 - [AUTHENTICATION.md](AUTHENTICATION.md) - User authentication and management guide
+- [SECURITY_ENHANCEMENTS.md](SECURITY_ENHANCEMENTS.md) - Security features and code quality guide
+- [DEVELOPMENT.md](DEVELOPMENT.md) - Developer guide and troubleshooting
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Technical design and structure
 - [SAMPLE_COMPLAINT_LETTER.txt](SAMPLE_COMPLAINT_LETTER.txt) - Template for formal complaints
 
@@ -218,6 +220,62 @@ For issues, questions, or contributions:
 ---
 
 ## Version History
+
+### v1.2.0 (2025-10-31) - Security Enhancements & Code Quality
+
+**Major Security Enhancements**:
+- ✓ Comprehensive input validation module (RFC 5322 email, strong passwords)
+- ✓ Rate limiting and account lockout (5 attempts/5min, 15min lockout)
+- ✓ Security event logging with audit trail database
+- ✓ Password strength requirements (uppercase, lowercase, digit, special char)
+- ✓ Protection against common patterns and sequential characters
+- ✓ Reserved username blocking (admin, root, system, etc.)
+- ✓ IP address tracking for all security events
+- ✓ Failed login attempt monitoring
+
+**User Profile Features**:
+- User profile page with account information display
+- Self-service password change with current password verification
+- Role badges and account status indicators
+- Last login and member since timestamps
+
+**Database Enhancements**:
+- Added audit_log table for persistent security event storage
+- Created 11 performance indices across all tables
+- Indexed users, sightings, properties, and audit_log tables
+- Optimized queries for user lookups, role filtering, and event tracking
+
+**Code Quality Improvements**:
+- Created run.py as primary entry point with CLI arguments
+- Created check_setup.py for environment verification
+- Enhanced error handlers (403 Forbidden, 404 Not Found, 500 Internal Server Error)
+- Added execution guard to main.py with helpful error messages
+- Type hints and comprehensive docstrings throughout
+- Improved import structure and module organization
+
+**New Files**:
+- `app/validators.py` - Input validation utilities (267 lines)
+- `app/security.py` - Security logging and rate limiting (300 lines)
+- `run.py` - Application entry point with CLI support (85 lines)
+- `check_setup.py` - Environment verification script (150 lines)
+- `templates/profile.html` - User profile display
+- `templates/change_password.html` - Password change form
+- `SECURITY_ENHANCEMENTS.md` - Comprehensive security documentation (600+ lines)
+- `DEVELOPMENT.md` - Developer guide and troubleshooting (400+ lines)
+
+**Security Events Tracked**:
+- Login success/failure, logout, registration
+- Password changes, user creation/deletion
+- User activation/deactivation, account lockouts
+- Unauthorized access attempts
+
+**Compliance**:
+- ✓ OWASP Top 10 2021 compliance
+- ✓ Defense in depth security architecture
+- ✓ Least privilege access control
+- ✓ Complete audit trail for forensic analysis
+
+For detailed information, see: [SECURITY_ENHANCEMENTS.md](SECURITY_ENHANCEMENTS.md) and [DEVELOPMENT.md](DEVELOPMENT.md)
 
 ### v1.1.0 (2025-10-31) - Authentication & Multi-User Support
 
@@ -383,7 +441,7 @@ For detailed information, see: `docs/branches/claude/roach-tracker-kickoff-011CU
 
 Created by **dnoice** with **Claude AI**
 
-Version: 1.1.0
+Version: 1.2.0
 Created: 2025-10-31
 Updated: 2025-10-31
 
