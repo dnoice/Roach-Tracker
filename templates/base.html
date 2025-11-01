@@ -30,10 +30,25 @@
                 <span></span>
             </button>
             <ul class="nav-menu" id="navMenu">
-                <li><a href="{{ url_for('index') }}" class="nav-link">Dashboard</a></li>
-                <li><a href="{{ url_for('log_sighting') }}" class="nav-link">Log Sighting</a></li>
-                <li><a href="{{ url_for('view_sightings') }}" class="nav-link">All Sightings</a></li>
-                <li><a href="{{ url_for('statistics') }}" class="nav-link">Statistics</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('index') }}" class="nav-link">Dashboard</a></li>
+                    <li><a href="{{ url_for('log_sighting') }}" class="nav-link">Log Sighting</a></li>
+                    <li><a href="{{ url_for('view_sightings') }}" class="nav-link">All Sightings</a></li>
+                    <li><a href="{{ url_for('statistics') }}" class="nav-link">Statistics</a></li>
+                    {% if current_user.is_admin() %}
+                        <li><a href="{{ url_for('admin_users') }}" class="nav-link">Users</a></li>
+                    {% endif %}
+                    <li class="nav-user">
+                        <a href="{{ url_for('profile') }}" class="nav-link" style="padding: 0.25rem 0.5rem;">
+                            <span class="nav-username">{{ current_user.username }}</span>
+                            <span class="nav-role">({{ current_user.role }})</span>
+                        </a>
+                    </li>
+                    <li><a href="{{ url_for('logout') }}" class="nav-link">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}" class="nav-link">Login</a></li>
+                    <li><a href="{{ url_for('register') }}" class="nav-link">Register</a></li>
+                {% endif %}
             </ul>
         </div>
     </nav>
@@ -62,7 +77,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>Roach Tracker v1.0.0 | Local-First Pest Documentation</p>
+            <p>Roach Tracker v1.1.0 | Secure Multi-User Pest Documentation</p>
             <p>Created by dnoice + Claude AI | 2025-10-31</p>
         </div>
     </footer>

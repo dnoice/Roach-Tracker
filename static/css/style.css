@@ -110,6 +110,26 @@ body {
     background-color: var(--primary-hover);
 }
 
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: rgba(255,255,255,0.1);
+    border-radius: var(--border-radius);
+}
+
+.nav-username {
+    color: white;
+    font-weight: 500;
+}
+
+.nav-role {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
 /* Mobile Navigation */
 @media (max-width: 768px) {
     .nav-toggle {

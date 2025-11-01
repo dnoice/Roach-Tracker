@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Roach Tracker{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h1 class="auth-title">Create Your Account</h1>
+        <p class="auth-subtitle">Start documenting pest sightings professionally</p>
+
+        <form method="POST" action="{{ url_for('register') }}" class="auth-form">
+            <div class="form-group">
+                <label for="username">Username *</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    class="form-control"
+                    required
+                    autofocus
+                    autocomplete="username"
+                    minlength="3"
+                    placeholder="At least 3 characters"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="form-control"
+                    required
+                    autocomplete="email"
+                    placeholder="your.email@example.com"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="full_name">Full Name (Optional)</label>
+                <input
+                    type="text"
+                    id="full_name"
+                    name="full_name"
+                    class="form-control"
+                    autocomplete="name"
+                    placeholder="John Doe"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    class="form-control"
+                    required
+                    autocomplete="new-password"
+                    minlength="8"
+                    placeholder="At least 8 characters"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password_confirm">Confirm Password *</label>
+                <input
+                    type="password"
+                    id="password_confirm"
+                    name="password_confirm"
+                    class="form-control"
+                    required
+                    autocomplete="new-password"
+                    minlength="8"
+                    placeholder="Re-enter your password"
+                >
+            </div>
+
+            <div class="form-help">
+                <p>* Required fields</p>
+                <p>Password must be at least 8 characters long</p>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+            </div>
+        </form>
+
+        <div class="auth-footer">
+            <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 200px);
+        padding: 2rem 1rem;
+    }
+
+    .auth-card {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 2rem;
+        max-width: 500px;
+        width: 100%;
+    }
+
+    .auth-title {
+        font-size: 1.8rem;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    .auth-subtitle {
+        color: #7f8c8d;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
+    }
+
+    .auth-form {
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #2c3e50;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+    }
+
+    .form-help {
+        background: #ecf0f1;
+        padding: 0.875rem;
+        border-radius: 4px;
+        margin-bottom: 1.25rem;
+    }
+
+    .form-help p {
+        margin: 0.25rem 0;
+        font-size: 0.85rem;
+        color: #555;
+    }
+
+    .btn-block {
+        width: 100%;
+        padding: 0.875rem;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .auth-footer {
+        text-align: center;
+        padding-top: 1rem;
+        border-top: 1px solid #eee;
+    }
+
+    .auth-footer p {
+        margin: 0;
+        color: #7f8c8d;
+        font-size: 0.95rem;
+    }
+
+    .auth-footer a {
+        color: #3498db;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .auth-footer a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        .auth-card {
+            padding: 1.5rem;
+        }
+
+        .auth-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
