@@ -1,7 +1,10 @@
 # Global Assets - Images Documentation
 
+**File**: `README.md`
+**Path**: `global-assets/images/README.md`
 **Directory**: `global-assets/images/`
 **Purpose**: Global brand images and assets used across the project
+**Author**: dnoice + Claude AI
 **Version**: 1.2.0
 **Created**: 2025-10-31
 **Updated**: 2025-11-01

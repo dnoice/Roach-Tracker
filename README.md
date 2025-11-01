@@ -1,3 +1,13 @@
+**File**: `README.md`
+**Path**: `README.md`
+**Purpose**: Main project documentation - Overview, installation, usage, and feature guide for Roach Tracker
+**Author**: dnoice + Claude AI
+**Version**: 1.2.0
+**Created**: 2025-10-31
+**Updated**: 2025-11-01
+
+---
+
 # Roach Tracker
 
 ![Roach Tracker Banner](https://github.com/dnoice/Roach-Tracker/blob/main/global-assets/images/roach-tracker-banner.png)

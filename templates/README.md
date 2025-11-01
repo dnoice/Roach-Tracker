@@ -1,7 +1,10 @@
 # Templates Documentation
 
+**File**: `README.md`
+**Path**: `templates/README.md`
 **Directory**: `templates/`
 **Purpose**: Jinja2 HTML templates for the Flask web application frontend
+**Author**: dnoice + Claude AI
 **Version**: 1.2.0
 **Created**: 2025-10-31
 **Updated**: 2025-11-01

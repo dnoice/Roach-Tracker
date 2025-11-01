@@ -1,3 +1,13 @@
+**File**: `ARCHITECTURE.md`
+**Path**: `docs/ARCHITECTURE.md`
+**Purpose**: System architecture, technical design, and structural documentation
+**Author**: dnoice + Claude AI
+**Version**: 1.2.0
+**Created**: 2025-10-31
+**Updated**: 2025-11-01
+
+---
+
 # Architecture Documentation
 
 **Roach Tracker - Technical Design and Structure**

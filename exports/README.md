@@ -1,7 +1,10 @@
 # Exports Directory Documentation
 
+**File**: `README.md`
+**Path**: `exports/README.md`
 **Directory**: `exports/`
 **Purpose**: Storage for generated reports (PDF and CSV) created by users
+**Author**: dnoice + Claude AI
 **Version**: 1.2.0
 **Created**: 2025-10-31
 **Updated**: 2025-11-01

@@ -1,3 +1,13 @@
+**File**: `QUICK_START.md`
+**Path**: `QUICK_START.md`
+**Purpose**: Fast-track setup and usage guide for new users
+**Author**: dnoice + Claude AI
+**Version**: 1.2.0
+**Created**: 2025-10-31
+**Updated**: 2025-11-01
+
+---
+
 # Quick Start Guide
 
 **Roach Tracker - Complete Setup and Usage Guide**

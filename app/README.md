@@ -1,7 +1,10 @@
 # Application Backend Documentation
 
+**File**: `README.md`
+**Path**: `app/README.md`
 **Directory**: `app/`
 **Purpose**: Flask application backend - Core business logic, database operations, authentication, and utilities
+**Author**: dnoice + Claude AI
 **Version**: 1.2.0
 **Created**: 2025-10-31
 **Updated**: 2025-11-01

@@ -1,13 +1,12 @@
-DEVELOPMENT.md
-
 # Development Guide
 
-**File**: DEVELOPMENT.md
+**File**: `DEVELOPMENT.md`
+**Path**: `docs/DEVELOPMENT.md`
 **Purpose**: Guide for developers working on Roach Tracker
 **Author**: dnoice + Claude AI
-**Version**: 1.0.0
+**Version**: 1.2.0
 **Created**: 2025-10-31
-**Updated**: 2025-10-31
+**Updated**: 2025-11-01
 
 ---
 

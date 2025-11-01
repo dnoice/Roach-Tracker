@@ -1,7 +1,10 @@
 # Static Assets Documentation
 
+**File**: `README.md`
+**Path**: `static/README.md`
 **Directory**: `static/`
 **Purpose**: Frontend static assets - CSS stylesheets, JavaScript, and user-uploaded files
+**Author**: dnoice + Claude AI
 **Version**: 1.2.0
 **Created**: 2025-10-31
 **Updated**: 2025-11-01

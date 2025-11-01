@@ -1,7 +1,10 @@
 # Documentation Directory
 
+**File**: `README.md`
+**Path**: `docs/README.md`
 **Directory**: `docs/`
 **Purpose**: Comprehensive project documentation, guides, and branch-specific development logs
+**Author**: dnoice + Claude AI
 **Version**: 1.2.0
 **Created**: 2025-10-31
 **Updated**: 2025-11-01
